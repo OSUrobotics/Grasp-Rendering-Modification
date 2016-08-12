@@ -26,3 +26,16 @@
 * renderToTexture.cpp
 * viewer.h
 * warmcoolFrag.glsl/warmcoolVert.glsl
+
+
+----
+##Rendering examples
+
+
+Rendering Hanoi (no silhouettes)
+
+![alt text](https://lh3.googleusercontent.com/uBXDVoFHqjCpmFNcj0BA1-AqeyWmDCKzG9q37hBfm-IZMlYYDmRAAIsNyN1oS81Nrnlk_atTVxpM57xJGQg82AZQzQv7qWzvegj9G40uzMlD0fwD8gx-Gs2rQzPfW01-mdZCOBT3Hk4 "hanoi gif")
+
+
+Cup with Silhouette and specular effects
+![alt text](http://i.imgur.com/qEHaDds.png "cool cup")
