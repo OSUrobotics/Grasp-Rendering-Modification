@@ -9,7 +9,7 @@ The qtcoinrave folder contains a modified version of the qtcoinrave plugin. To a
 ##Debugging
 To compile a debug version of the OpenRAVE source, cd to the top level OpenRAVE folder and run the set of commands:
 
-`cmake -DCMAKE_INSTALL_PREFIX=/my/new/install/dir -DCMAKE_BUILD_TYPE=Debug ..`
+`cmake -DCMAKE_INSTALL_PREFIX=/my/new/install/dir -DCMAKE_BUILD_TYPE=Debug .`
 
 
 Note, `/my/new/install/dir` will most likely be `usr/local`.
