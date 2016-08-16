@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/mcqueen/openrave/plugins/qtcoinrave/glew.c
+GL/glew.h
+-
+GL/wglew.h
+-
+GL/glxew.h
+-
+stddef.h
+-
+dlfcn.h
+-
+stdio.h
+-
+stdlib.h
+-
+stdlib.h
+-
+string.h
+-
+AvailabilityMacros.h
+-
+dlfcn.h
+-
+mach-o/dyld.h
+-
+
