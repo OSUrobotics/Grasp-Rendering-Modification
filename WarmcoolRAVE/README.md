@@ -4,7 +4,7 @@
 To install openrave, download openrave_0.9-1_amd64.deb and run. To install the Collada support debians, run the file openrave_install_script.sh.
 
 ##Modifications to source code
-The files in this repository are the ones that have been modified from the original OpenRAVE source code. 
+The qtcoinrave folder contains a modified version of the qtcoinrave plugin. To add these changes to your installation of OpenRAVE, simply replace your qtcoinrave folder with the one here.
 
 ##Debugging
 To compile a debug version of the OpenRAVE source, cd to the top level OpenRAVE folder and run the set of commands:
