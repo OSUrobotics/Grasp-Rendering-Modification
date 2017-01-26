@@ -1,4 +1,6 @@
 #Grasp-Rendering-Modification
+###Installation Instructions:
+https://scaron.info/teaching/installing-openrave-on-ubuntu-14.04.html
 
 ##Programs to know:
 * OpenGL
