@@ -303,8 +303,9 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     // Add the shader program to its own separator
     SoSeparator* shaderSep = new SoSeparator;
     shaderSep->insertChild(QtCoinViewer::_ConfigureShaders(1), 0);
-
     shaderSep->addChild(_ivBodies);
+   
+   
    
     //SoShadowStyle* shadowStyle = new SoShadowStyle;
     //_ivBodies->addChild(shadowStyle);
@@ -313,15 +314,54 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     /////////////////
     //END SHADER
     //////////////// 
+	
+	/////////////////
+    //END SHADER
+    //////////////// 
 
+
+
+    /////////////////
+    //START SHADOW
+    /////////////////
+    //Create a spotlight that is used to generate shadows with SoShadowGroup
+
+    SoSpotLight* spotLight = new SoSpotLight;
+    spotLight->intensity.setValue(1);
+    spotLight->location.setValue(-0.015f,-0.02f,5);
+    spotLight->color.setValue(1,1,1);
+    spotLight->direction.setValue(0,0,-1);
+    spotLight->dropOffRate.setValue(0);
+    spotLight->cutOffAngle.setValue(0.78539819f);
+    _ivBodies->addChild(spotLight);
+
+
+
+   //Testing light
+   /*SoDirectionalLight *myDirLight = new SoDirectionalLight;
+   myDirLight->direction.setValue(0, -1, -1);
+   myDirLight->color.setValue(1, 0, 0);
+   _ivRoot->addChild(myDirLight);*/
+
+    SoShadowStyle* shadowStyle = new SoShadowStyle;
+    _ivBodies->addChild(shadowStyle);
+
+    SoShadowGroup* shadowGroup = new SoShadowGroup;
+    shadowGroup->addChild(shaderSep);
+    //shadowGroup->addChild(_ivBodies);
+
+    /////////////////
+    //END SHADOW
+    /////////////////
+	
     SoEventCallback * ecb = new SoEventCallback;
     ecb->addEventCallback(SoLocation2Event::getClassTypeId(), mousemove_cb, this);
     _ivRoot->addChild(ecb);
 
     _ivRoot->addChild(_ivStyle);
     //_ivRoot->addChild(_ivBodies);
-    _ivRoot->addChild(shaderSep);
-
+    //_ivRoot->addChild(shaderSep);
+	_ivRoot->addChild(shadowGroup);
 
     // add Inventor selection callbacks
     _ivRoot->addSelectionCallback(_SelectHandler, this);
