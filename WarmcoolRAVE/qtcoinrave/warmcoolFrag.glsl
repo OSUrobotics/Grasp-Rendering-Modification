@@ -37,8 +37,8 @@ void main(){
  
 
 	// Warm Cool Shading
-	float coolScalar = 0.7;
-	float warmScalar = 0.2;
+	float coolScalar = 0.25;
+	float warmScalar = 0.5;
 	vec3 Kcool = vec3(0.0, 0.0, 0.9) + coolScalar * diffuseColor.xyz;
 	vec3 Kwarm = vec3(0.9, 0.5, 0.0) + warmScalar * diffuseColor.xyz;
 
@@ -63,6 +63,7 @@ void main(){
 
 	else{
 	gl_FragColor.xyz = 0.7*color + specular + ambient; // - emissive; 
+	//gl_FragColor.xyz = mix(Kcool,Kwarm,diffuse) + specular + ambient; // - emissive; 
 	}
  
 	gl_FragColor.w = 1.0;

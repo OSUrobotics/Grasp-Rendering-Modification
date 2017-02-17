@@ -19,7 +19,8 @@
 #include <vector>
 
 #include "qtcoin.h"
-
+#include <Inventor/annex/FXViz/nodes/SoShadowStyle.h>
+#include <Inventor/annex/FXViz/nodes/SoShadowGroup.h>
 #include <Inventor/elements/SoGLCacheContextElement.h>
 #include <Inventor/actions/SoToVRML2Action.h>
 #include <Inventor/actions/SoWriteAction.h>
@@ -42,6 +43,7 @@
 #include <Inventor/nodes/SoShaderProgram.h>
 #include <Inventor/nodes/SoFragmentShader.h>
 #include <Inventor/nodes/SoVertexShader.h>
+#include <Inventor/nodes/SoGeometryShader.h>
 #include <Inventor/nodes/SoCallback.h>
 
 #if QT_VERSION >= 0x040000 // check for qt4
@@ -51,10 +53,7 @@
 #endif
 
 #include "renderToTexture.hpp"
-
 #include <locale>
-
-
 
 const float TIMER_SENSOR_INTERVAL = (1.0f/60.0f);
 
@@ -301,29 +300,19 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     //SHADER
     ////////////////
 
-    //Initialize the vertex and fragment shaders
-    SoVertexShader* vertexShader = new SoVertexShader;
-    SoFragmentShader* fragmentShader = new SoFragmentShader;
-
-    //Specify the vertex and fragment shaders
-    vertexShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/warmcoolVert.glsl");
-    fragmentShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/warmcoolFrag.glsl");
-
-    //Initialize and set the shader program
-    SoShaderProgram* shaderProgram = new SoShaderProgram;
-    shaderProgram->shaderObject.set1Value(0, vertexShader);
-    shaderProgram->shaderObject.set1Value(1, fragmentShader);
-
     // Add the shader program to its own separator
     SoSeparator* shaderSep = new SoSeparator;
-    shaderSep->insertChild(shaderProgram, 0);
+    shaderSep->insertChild(QtCoinViewer::_ConfigureShaders(1), 0);
 
     shaderSep->addChild(_ivBodies);
-
+   
+    //SoShadowStyle* shadowStyle = new SoShadowStyle;
+    //_ivBodies->addChild(shadowStyle);
+    //SoShadowGroup* shadowGroup = new SoShadowGroup;
+    //shadowGroup->addChild(shaderSep); 
     /////////////////
     //END SHADER
     //////////////// 
-    
 
     SoEventCallback * ecb = new SoEventCallback;
     ecb->addEventCallback(SoLocation2Event::getClassTypeId(), mousemove_cb, this);
@@ -4065,30 +4054,30 @@ void QtCoinViewer::_SetNearPlane(dReal nearplane)
     _pviewer->setAutoClippingStrategy(SoQtViewer::CONSTANT_NEAR_PLANE, nearplane);
 }
 
+SoShaderProgram* QtCoinViewer::_ConfigureShaders(int shader_id){
 
-/*void QtCoinViewer::_ConfigureShaders(){
-
-    // Create new scene object separator
-    SoSeparator* ShaderSep = new SoSeparator;
-
-    // Initialize and set the vertex shader
-    SoVertexShader* VertexShader = new SoVertexShader;
-
-    // Initialize and set the fragment shader
-    SoFragmentShader* FragmentShader = new SoFragmentShader;
-
-    // Specify the vertex and fragment shaders
-    VertexShader->sourceProgram.setValue("simple.vert");
-    FragmentShader->sourceProgram.setValue("simple.frag");
-
-    // Initialize and set the shader program
-    SoShaderProgram *shaderProgram = new SoShaderProgram;
-    shaderProgram->shaderObject.set1Value(0, VertexShader);
-    shaderProgram->shaderObject.set1Value(1, FragmentShader);
-
-    //return shaderProgram;
-} */
-
+    //Initialize the vertex and fragment shaders
+    SoVertexShader* vertexShader = new SoVertexShader;
+    SoFragmentShader* fragmentShader = new SoFragmentShader;
+    SoGeometryShader* geometryShader = new SoGeometryShader;
+    //Specify the vertex and fragment shaders
+    if(shader_id==0){
+    	vertexShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/warmcoolVert.glsl");
+    	fragmentShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/warmcoolFrag.glsl");
+	geometryShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/silhouetteGeo.glsl");
+    }
+    else if(shader_id==1){
+    	vertexShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/silhouetteVert.glsl");
+    	fragmentShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/silhouetteFrag.glsl");
+    }
+    //Initialize and set the shader program
+    SoShaderProgram* shaderProgram = new SoShaderProgram;
+    shaderProgram->shaderObject.set1Value(0, vertexShader);
+    shaderProgram->shaderObject.set1Value(1, geometryShader);
+    shaderProgram->shaderObject.set1Value(2, fragmentShader);
+	
+    return shaderProgram;
+}
 
 /*
 ScreenRendererWidget::ScreenRendererWidget()
