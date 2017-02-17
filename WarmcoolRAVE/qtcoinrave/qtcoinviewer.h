@@ -36,6 +36,7 @@
 
 #include "qtcoin.h"
 
+#include <Inventor/nodes/SoShaderProgram.h>
 #include <qgl.h>
 
 //#include <QtDeclarative/QDeclarativeExtensionPlugin>
@@ -141,7 +142,7 @@ public:
         }
     }
 
- //   virtual void _ConfigureShaders();
+    virtual SoShaderProgram* _ConfigureShaders(int shader_id);
 
     virtual bool GetCameraImage(std::vector<uint8_t>& memory, int width, int height, const RaveTransform<float>& t, const SensorBase::CameraIntrinsics& KK);
 
