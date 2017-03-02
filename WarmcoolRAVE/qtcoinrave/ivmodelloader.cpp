@@ -69,7 +69,7 @@ public:
             return false;
         }
 
-        Vector diffuseColor(0,0,0,0), ambientColor;
+        Vector diffuseColor(1,1,1,1), ambientColor;
         dReal ftransparency=0;
         TriMesh trimesh;
         bool bSuccess = false;

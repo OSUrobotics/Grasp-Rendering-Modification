@@ -72,8 +72,8 @@ SoSeparator* IvDragger::_CreateAxes(float fSize,float fColor)
 
         SoMaterial* mtrl = new SoMaterial;
         mtrl->diffuseColor = SbColor(colors[i].x, colors[i].y, colors[i].z);
-	mtrl->ambientColor = SbColor(colors[i].x, colors[i].y, colors[i].z);
-	mtrl->setOverride(false);
+        mtrl->ambientColor = SbColor(colors[i].x, colors[i].y, colors[i].z);
+        mtrl->setOverride(true);
 
         SoTransform* protation = new SoTransform();
         protation->rotation.setValue(SbVec3f(rotations[i].x, rotations[i].y, rotations[i].z), rotations[i].w);

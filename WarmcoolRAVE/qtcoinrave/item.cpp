@@ -222,12 +222,12 @@ void KinBodyItem::Load()
                 // by default render only one side of objects
                 // don't change since sensors like cameras are usually inside objects, but they
                 // need to see outside of the world
-                SoShapeHints* phints = new SoShapeHints();
+                /*SoShapeHints* phints = new SoShapeHints();
                 phints->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
                 phints->shapeType = SoShapeHints::SOLID;
                 phints->faceType = SoShapeHints::CONVEX;
-                phints->creaseAngle = 0;
-                psep->addChild(phints);
+                phints->creaseAngle = 0;*/
+                //psep->addChild(phints);
 
                 switch(geom->GetType()) {
                 case GT_None:
@@ -336,14 +336,14 @@ SoSeparator *KinBodyItem::RenderTrimesh(SoSeparator *psep, TriMesh const &mesh, 
     // by default render only one side of objects
     // don't change since sensors like cameras are usually inside objects, but they
     // need to see outside of the world
-    SoShapeHints* phints = new SoShapeHints();
+    /*SoShapeHints* phints = new SoShapeHints();
     phints->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
     phints->shapeType = SoShapeHints::SOLID;
     phints->faceType = SoShapeHints::CONVEX;
-    phints->creaseAngle = 0;
-    psep->addChild(phints);
+    phints->creaseAngle = 0;*/
+    //psep->addChild(phints);
 
-    phints->shapeType = SoShapeHints::UNKNOWN_SHAPE_TYPE;
+    //phints->shapeType = SoShapeHints::UNKNOWN_SHAPE_TYPE;
 
     SoMaterialBinding* pbinding = new SoMaterialBinding();
     pbinding->value = SoMaterialBinding::OVERALL;

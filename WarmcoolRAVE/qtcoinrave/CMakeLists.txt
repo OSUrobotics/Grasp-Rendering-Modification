@@ -7,7 +7,7 @@ if (NOT SOQT_LIBRARY_FOUND)
   message(STATUS "WARNING: SoQt4 not found, disabling QtCoin GUI plugin. Please install SoQt (http://www.coin3d.org)")
 endif ()
 
-find_package(OpenGL REQUIRED)
+find_package(OpenGL)
 if(NOT OPENGL_FOUND)
   message(STATUS "WARNING: OpenGL not found. This library is not necessary, but it is good to link with")
 endif()
@@ -25,7 +25,7 @@ if (QT_FOUND AND QT_QTCORE_FOUND AND QT_QTGUI_FOUND AND SOQT_LIBRARY_FOUND AND C
   check_include_file(X11/Xlib.h HAVE_X11_XLIB_H)
 
    # build sources, moc'd sources, and rcc'd sources
-  add_library(qtcoinrave SHARED ivselector.cpp item.cpp qtcoinviewer.cpp qtcoinrave.cpp ${MOC_OUTPUT_FILES} item.h ivselector.h qtcoin.h qtcoinviewer.h qtcameraviewer.h ivmodelloader.cpp renderToTexture.cpp)
+  add_library(qtcoinrave SHARED ivselector.cpp item.cpp qtcoinviewer.cpp qtcoinrave.cpp ${MOC_OUTPUT_FILES} item.h ivselector.h qtcoin.h qtcoinviewer.h qtcameraviewer.h ivmodelloader.cpp)
 
   set(QTCOIN_COMPILE_FLAGS "${PLUGIN_COMPILE_FLAGS}")
   if( HAVE_X11_XLIB_H )
@@ -39,7 +39,7 @@ if (QT_FOUND AND QT_QTCORE_FOUND AND QT_QTGUI_FOUND AND SOQT_LIBRARY_FOUND AND C
   endif()
 
   target_link_libraries (qtcoinrave ${extLIBS} libopenrave)
-  set_target_properties(qtcoinrave PROPERTIES COMPILE_FLAGS "-g ${QTCOIN_COMPILE_FLAGS} ${SOQT_CXXFLAGS} ${COIN_CXXFLAGS}" LINK_FLAGS "${QTCOIN_LINK_FLAGS}")
+  set_target_properties(qtcoinrave PROPERTIES COMPILE_FLAGS "${QTCOIN_COMPILE_FLAGS} ${SOQT_CXXFLAGS} ${COIN_CXXFLAGS}" LINK_FLAGS "${QTCOIN_LINK_FLAGS}")
   install(TARGETS qtcoinrave DESTINATION ${OPENRAVE_PLUGINS_INSTALL_DIR} COMPONENT ${COMPONENT_PREFIX}plugin-qtcoinrave)
   
   if( MSVC )

@@ -62,8 +62,8 @@ void main(){
 	}
 
 	else{
-	gl_FragColor.xyz = 0.7*color + specular + ambient; // - emissive; 
-	//gl_FragColor.xyz = mix(Kcool,Kwarm,diffuse) + specular + ambient; // - emissive; 
+	//gl_FragColor.xyz = 0.7*color + specular + ambient; // - emissive; 
+	gl_FragColor.xyz = mix(Kcool,Kwarm,diffuse) + specular + ambient; // - emissive; 
 	}
  
 	gl_FragColor.w = 1.0;

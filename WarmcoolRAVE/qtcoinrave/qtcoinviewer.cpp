@@ -25,12 +25,16 @@
 #include <Inventor/actions/SoToVRML2Action.h>
 #include <Inventor/actions/SoWriteAction.h>
 #include <Inventor/nodes/SoComplexity.h>
+#include <Inventor/nodes/SoCone.h>
 #include <Inventor/nodes/SoCoordinate3.h>
+#include <Inventor/nodes/SoCube.h>
 #include <Inventor/nodes/SoFaceSet.h>
 #include <Inventor/nodes/SoPointSet.h>
 #include <Inventor/nodes/SoLightModel.h>
 #include <Inventor/nodes/SoLineSet.h>
 #include <Inventor/nodes/SoMaterialBinding.h>
+#include <Inventor/nodes/SoShapeHints.h>
+#include <Inventor/nodes/SoSpotLight.h>
 #include <Inventor/nodes/SoTextureCombine.h>
 #include <Inventor/nodes/SoTextureCoordinate2.h>
 #include <Inventor/nodes/SoTextureScalePolicy.h>
@@ -300,22 +304,35 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     //SHADER
     ////////////////
 
-    // Add the shader program to its own separator
+    SoShapeHints * shapeHints = new SoShapeHints;
+    shapeHints->vertexOrdering = SoShapeHints::CLOCKWISE;
+    shapeHints->shapeType = SoShapeHints::SOLID;
+    
+    SoShapeHints * shapeHints1 = new SoShapeHints;
+    shapeHints1->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
+    shapeHints1->shapeType = SoShapeHints::SOLID;
+    
     SoSeparator* shaderSep = new SoSeparator;
     shaderSep->insertChild(QtCoinViewer::_ConfigureShaders(1), 0);
+   
+    SoSeparator* shaderSep1 = new SoSeparator;
+    shaderSep1->insertChild(QtCoinViewer::_ConfigureShaders(0), 0);
+    
+    //_ivBodies->renderCaching.setValue(SoSeparator::OFF);
+    //SoCube * cube = new SoCube;
+    //_ivBodies->addChild(cube);
+    shaderSep->insertChild(shapeHints, 0);
     shaderSep->addChild(_ivBodies);
-   
-   
-   
-    //SoShadowStyle* shadowStyle = new SoShadowStyle;
-    //_ivBodies->addChild(shadowStyle);
-    //SoShadowGroup* shadowGroup = new SoShadowGroup;
-    //shadowGroup->addChild(shaderSep); 
+    shaderSep1->insertChild(shapeHints1, 0);
+    shaderSep1->addChild(_ivBodies);
+/*
+    SoCone * cone = new SoCone;
+    shaderSep->insertChild(shapeHints, 0);
+    shaderSep->addChild(cone);
+    shaderSep1->insertChild(shapeHints1, 0);
+    shaderSep1->addChild(cone);
+  */ 
     /////////////////
-    //END SHADER
-    //////////////// 
-	
-	/////////////////
     //END SHADER
     //////////////// 
 
@@ -360,8 +377,9 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
 
     _ivRoot->addChild(_ivStyle);
     //_ivRoot->addChild(_ivBodies);
-    //_ivRoot->addChild(shaderSep);
-	_ivRoot->addChild(shadowGroup);
+    _ivRoot->addChild(shaderSep);
+    _ivRoot->addChild(shaderSep1);
+    //_ivRoot->addChild(shadowGroup);
 
     // add Inventor selection callbacks
     _ivRoot->addSelectionCallback(_SelectHandler, this);
