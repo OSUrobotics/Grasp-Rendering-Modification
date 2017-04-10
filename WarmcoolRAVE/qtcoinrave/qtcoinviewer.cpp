@@ -44,6 +44,10 @@
 #include <Inventor/SoPickedPoint.h>
 #include <Inventor/VRMLnodes/SoVRMLGroup.h>
 
+#include <Inventor/SbImage.h>
+#include <Inventor/SoOffscreenRenderer.h>
+#include <Inventor/nodes/SoTexture2.h>
+#include <Inventor/nodes/SoSceneTexture2.h>
 #include <Inventor/nodes/SoShaderProgram.h>
 #include <Inventor/nodes/SoFragmentShader.h>
 #include <Inventor/nodes/SoVertexShader.h>
@@ -344,8 +348,8 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     //Create a spotlight that is used to generate shadows with SoShadowGroup
 
     SoSpotLight* spotLight = new SoSpotLight;
-    spotLight->intensity.setValue(1);
-    spotLight->location.setValue(-0.015f,-0.02f,5);
+    spotLight->intensity.setValue(0.1);
+    spotLight->location.setValue(-0.015f,-0.02f,6);
     spotLight->color.setValue(1,1,1);
     spotLight->direction.setValue(0,0,-1);
     spotLight->dropOffRate.setValue(0);
@@ -359,14 +363,22 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
    myDirLight->direction.setValue(0, -1, -1);
    myDirLight->color.setValue(1, 0, 0);
    _ivRoot->addChild(myDirLight);*/
-
+  
     SoShadowStyle* shadowStyle = new SoShadowStyle;
-    _ivBodies->addChild(shadowStyle);
+    //_ivBodies->addChild(shadowStyle);    
 
     SoShadowGroup* shadowGroup = new SoShadowGroup;
-    shadowGroup->addChild(shaderSep);
-    //shadowGroup->addChild(_ivBodies);
+    shadowGroup->addChild(shadowStyle);
+    shadowGroup->intensity.setValue(1.0f);
+    //shaderSep1->addChild(shadowGroup);
+    //shadowGroup->addChild(shaderSep);
+    //shadowGroup->addChild(shaderSep1);
+    //shadowGroup->addChild(shaderSep);
+    shadowGroup->addChild(_ivBodies);
 
+    //int nothing = 0;
+    
+    
     /////////////////
     //END SHADOW
     /////////////////
@@ -375,11 +387,14 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     ecb->addEventCallback(SoLocation2Event::getClassTypeId(), mousemove_cb, this);
     _ivRoot->addChild(ecb);
 
-    _ivRoot->addChild(_ivStyle);
+    //_ivRoot->addChild(_ivStyle);
     //_ivRoot->addChild(_ivBodies);
     _ivRoot->addChild(shaderSep);
-    _ivRoot->addChild(shaderSep1);
-    //_ivRoot->addChild(shadowGroup);
+    _ivRoot->addChild(shadowGroup);
+    //_ivRoot->addChild(shaderSep1);
+   // _ivRoot->addChild(shadowGroup);
+    //_ivRoot->addChild(shaderSep);
+    
 
     // add Inventor selection callbacks
     _ivRoot->addSelectionCallback(_SelectHandler, this);

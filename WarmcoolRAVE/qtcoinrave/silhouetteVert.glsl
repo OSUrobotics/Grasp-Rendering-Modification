@@ -1,4 +1,4 @@
-#version 130
+#version 120
 varying vec3 vpos;
 
 varying vec4 eposition;
@@ -20,5 +20,5 @@ void main()
 {
 	normal = mat3(gl_ModelViewMatrix) * gl_Normal;
 	vST = gl_MultiTexCoord0.st;
-	gl_Position = gl_ModelViewProjectionMatrix * vec4(gl_Vertex.xyz*1.1, 1.0);
+	gl_Position = gl_ModelViewProjectionMatrix * vec4(gl_Vertex.xyz*1.035, 1.0);
 }

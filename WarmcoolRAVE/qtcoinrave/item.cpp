@@ -226,8 +226,8 @@ void KinBodyItem::Load()
                 phints->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
                 phints->shapeType = SoShapeHints::SOLID;
                 phints->faceType = SoShapeHints::CONVEX;
-                phints->creaseAngle = 0;*/
-                //psep->addChild(phints);
+                phints->creaseAngle = 0;
+                psep->addChild(phints);*/
 
                 switch(geom->GetType()) {
                 case GT_None:
@@ -340,8 +340,8 @@ SoSeparator *KinBodyItem::RenderTrimesh(SoSeparator *psep, TriMesh const &mesh, 
     phints->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
     phints->shapeType = SoShapeHints::SOLID;
     phints->faceType = SoShapeHints::CONVEX;
-    phints->creaseAngle = 0;*/
-    //psep->addChild(phints);
+    phints->creaseAngle = 0;
+    psep->addChild(phints);*/
 
     //phints->shapeType = SoShapeHints::UNKNOWN_SHAPE_TYPE;
 

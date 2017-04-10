@@ -169,6 +169,9 @@ inline T CLAMP_ON_RANGE(T value, T min, T max)
 #include <Inventor/nodes/SoTranslation.h>
 #include <Inventor/nodes/SoTransparencyType.h>
 #include <Inventor/nodes/SoVertexShape.h>
+#include <Inventor/annex/FXViz/nodes/SoShadowStyle.h>
+#include <Inventor/annex/FXViz/nodes/SoShadowGroup.h>
+#include <Inventor/annex/FXViz/nodes/SoShadowSpotLight.h>
 
 #include <Inventor/Qt/SoQt.h>
 #include <Inventor/Qt/viewers/SoQtExaminerViewer.h>
