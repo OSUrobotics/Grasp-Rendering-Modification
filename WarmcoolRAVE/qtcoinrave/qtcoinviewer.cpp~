@@ -17,25 +17,21 @@
 #include <iostream>
 #include <stdlib.h>
 #include <vector>
+#include <limits.h>
+#include <unistd.h>
 
 #include "qtcoin.h"
-#include <Inventor/annex/FXViz/nodes/SoShadowStyle.h>
-#include <Inventor/annex/FXViz/nodes/SoShadowGroup.h>
+
 #include <Inventor/elements/SoGLCacheContextElement.h>
 #include <Inventor/actions/SoToVRML2Action.h>
 #include <Inventor/actions/SoWriteAction.h>
 #include <Inventor/nodes/SoComplexity.h>
-#include <Inventor/nodes/SoCone.h>
 #include <Inventor/nodes/SoCoordinate3.h>
-#include <Inventor/nodes/SoCube.h>
 #include <Inventor/nodes/SoFaceSet.h>
 #include <Inventor/nodes/SoPointSet.h>
 #include <Inventor/nodes/SoLightModel.h>
 #include <Inventor/nodes/SoLineSet.h>
 #include <Inventor/nodes/SoMaterialBinding.h>
-#include <Inventor/nodes/SoShaderParameter.h>
-#include <Inventor/nodes/SoShapeHints.h>
-#include <Inventor/nodes/SoSpotLight.h>
 #include <Inventor/nodes/SoTextureCombine.h>
 #include <Inventor/nodes/SoTextureCoordinate2.h>
 #include <Inventor/nodes/SoTextureScalePolicy.h>
@@ -48,7 +44,6 @@
 #include <Inventor/nodes/SoShaderProgram.h>
 #include <Inventor/nodes/SoFragmentShader.h>
 #include <Inventor/nodes/SoVertexShader.h>
-#include <Inventor/nodes/SoGeometryShader.h>
 #include <Inventor/nodes/SoCallback.h>
 
 #if QT_VERSION >= 0x040000 // check for qt4
@@ -58,7 +53,10 @@
 #endif
 
 #include "renderToTexture.hpp"
+
 #include <locale>
+
+
 
 const float TIMER_SENSOR_INTERVAL = (1.0f/60.0f);
 
@@ -304,87 +302,48 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     /////////////////
     //SHADER
     ////////////////
-    SoShapeHints * shapeHints = new SoShapeHints;
-    shapeHints->vertexOrdering = SoShapeHints::CLOCKWISE;
-    shapeHints->shapeType = SoShapeHints::SOLID;
-    
-    SoShapeHints * shapeHints1 = new SoShapeHints;
-    shapeHints1->vertexOrdering = SoShapeHints::COUNTERCLOCKWISE;
-    shapeHints1->shapeType = SoShapeHints::SOLID;
-    
+
+    char username[LOGIN_NAME_MAX];
+
+    result = getlogin_r(username, LOGIN_NAME_MAX);
+    if (result)
+    {
+        perror("getlogin_r");
+        return EXIT_FAILURE;
+    }
+
+    //Initialize the vertex and fragment shaders
+    SoVertexShader* vertexShader = new SoVertexShader;
+    SoFragmentShader* fragmentShader = new SoFragmentShader;
+
+    //Specify the vertex and fragment shaders
+    vertexShader->sourceProgram.setValue("/home/" + username "/openrave/plugins/qtcoinrave/warmcoolVert.glsl");
+    fragmentShader->sourceProgram.setValue("/home/" + username + "/openrave/plugins/qtcoinrave/warmcoolFrag.glsl");
+
+    //Initialize and set the shader program
+    SoShaderProgram* shaderProgram = new SoShaderProgram;
+    shaderProgram->shaderObject.set1Value(0, vertexShader);
+    shaderProgram->shaderObject.set1Value(1, fragmentShader);
+
+    // Add the shader program to its own separator
     SoSeparator* shaderSep = new SoSeparator;
-    shaderSep->insertChild(QtCoinViewer::_ConfigureShaders(1), 0);
-   
-    SoSeparator* shaderSep1 = new SoSeparator;
-    shaderSep1->insertChild(QtCoinViewer::_ConfigureShaders(0), 0);
-    
-    //_ivBodies->renderCaching.setValue(SoSeparator::OFF);
-    //SoCube * cube = new SoCube;
-    //_ivBodies->addChild(cube);
-    shaderSep->insertChild(shapeHints, 0);
+    shaderSep->insertChild(shaderProgram, 0);
+
     shaderSep->addChild(_ivBodies);
-    shaderSep1->insertChild(shapeHints1, 0);
-    shaderSep1->addChild(_ivBodies);
-    
-    SoDrawStyle *DrawStyle = new SoDrawStyle();
-    DrawStyle->style = SoDrawStyle::LINES;
-    /*SoCone * cone = new SoCone;
-    shaderSep->insertChild(shapeHints, 0);
-    shaderSep->addChild(cone);
-    shaderSep1->insertChild(shapeHints1, 0);
-    shaderSep1->addChild(cone);*/
+
     /////////////////
     //END SHADER
     //////////////// 
+    
 
-
-
-    /////////////////
-    //START SHADOW
-    /////////////////
-    //Create a spotlight that is used to generate shadows with SoShadowGroup
-
-    SoSpotLight* spotLight = new SoSpotLight;
-    spotLight->intensity.setValue(1);
-    spotLight->location.setValue(-0.015f,-0.02f,5);
-    spotLight->color.setValue(1,1,1);
-    spotLight->direction.setValue(0,0,-1);
-    spotLight->dropOffRate.setValue(0);
-    spotLight->cutOffAngle.setValue(0.78539819f);
-    //shaderSep1->addChild(spotLight);
-    _ivBodies->addChild(spotLight);
-
-
-
-   //Testing light
-   /*SoDirectionalLight *myDirLight = new SoDirectionalLight;
-   myDirLight->direction.setValue(0, -1, -1);
-   myDirLight->color.setValue(1, 0, 0);
-   _ivRoot->addChild(myDirLight);*/
-
-    SoShadowStyle* shadowStyle = new SoShadowStyle;
-    //shaderSep1->addChild(shadowStyle);
-    _ivBodies->addChild(shadowStyle);
-
-    SoShadowGroup* shadowGroup = new SoShadowGroup;
-    //shadowGroup->addChild(shaderSep1);
-    shadowGroup->addChild(_ivBodies);
-    /////////////////
-    //END SHADOW
-    /////////////////
-	
     SoEventCallback * ecb = new SoEventCallback;
     ecb->addEventCallback(SoLocation2Event::getClassTypeId(), mousemove_cb, this);
     _ivRoot->addChild(ecb);
 
-    _ivStyle->style = SoDrawStyle::LINES;
-    _ivStyle->lineWidth = 5.;
-    shaderSep->insertChild(_ivStyle,0);
-    //_ivRoot->addChild(_ivStyle);
+    _ivRoot->addChild(_ivStyle);
     //_ivRoot->addChild(_ivBodies);
-    _ivRoot->addChild(shaderSep1);
-    //_ivRoot->addChild(shadowGroup);
     _ivRoot->addChild(shaderSep);
+
 
     // add Inventor selection callbacks
     _ivRoot->addSelectionCallback(_SelectHandler, this);
@@ -4117,28 +4076,30 @@ void QtCoinViewer::_SetNearPlane(dReal nearplane)
     _pviewer->setAutoClippingStrategy(SoQtViewer::CONSTANT_NEAR_PLANE, nearplane);
 }
 
-SoShaderProgram* QtCoinViewer::_ConfigureShaders(int shader_id){
 
-    //Initialize the vertex and fragment shaders
-    SoVertexShader* vertexShader = new SoVertexShader;
-    SoFragmentShader* fragmentShader = new SoFragmentShader;
-    SoGeometryShader* geometryShader = new SoGeometryShader;
-    //Specify the vertex and fragment shaders
-    if(shader_id==0){
-    	vertexShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/warmcoolVert.glsl");
-    	fragmentShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/warmcoolFrag.glsl");
-    }
-    else if(shader_id==1){
-    	vertexShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/silhouetteVert.glsl");
-    	fragmentShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/silhouetteFrag.glsl");
-    }
-    //Initialize and set the shader program
-    SoShaderProgram* shaderProgram = new SoShaderProgram;
-    shaderProgram->shaderObject.set1Value(0, vertexShader);
-    shaderProgram->shaderObject.set1Value(1, fragmentShader);
-	
-    return shaderProgram;
-}
+/*void QtCoinViewer::_ConfigureShaders(){
+
+    // Create new scene object separator
+    SoSeparator* ShaderSep = new SoSeparator;
+
+    // Initialize and set the vertex shader
+    SoVertexShader* VertexShader = new SoVertexShader;
+
+    // Initialize and set the fragment shader
+    SoFragmentShader* FragmentShader = new SoFragmentShader;
+
+    // Specify the vertex and fragment shaders
+    VertexShader->sourceProgram.setValue("simple.vert");
+    FragmentShader->sourceProgram.setValue("simple.frag");
+
+    // Initialize and set the shader program
+    SoShaderProgram *shaderProgram = new SoShaderProgram;
+    shaderProgram->shaderObject.set1Value(0, VertexShader);
+    shaderProgram->shaderObject.set1Value(1, FragmentShader);
+
+    //return shaderProgram;
+} */
+
 
 /*
 ScreenRendererWidget::ScreenRendererWidget()
