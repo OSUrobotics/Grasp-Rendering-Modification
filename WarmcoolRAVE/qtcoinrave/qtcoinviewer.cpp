@@ -33,6 +33,7 @@
 #include <Inventor/nodes/SoLightModel.h>
 #include <Inventor/nodes/SoLineSet.h>
 #include <Inventor/nodes/SoMaterialBinding.h>
+#include <Inventor/nodes/SoPolygonOffset.h>
 #include <Inventor/nodes/SoShaderParameter.h>
 #include <Inventor/nodes/SoShapeHints.h>
 #include <Inventor/nodes/SoSpotLight.h>
@@ -378,8 +379,13 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     _ivRoot->addChild(ecb);
 
     _ivStyle->style = SoDrawStyle::LINES;
-    _ivStyle->lineWidth = 5.;
+    _ivStyle->lineWidth = 4.;
     shaderSep->insertChild(_ivStyle,0);
+    SoPolygonOffset* offset = new SoPolygonOffset;
+    offset->styles.setValue(SoPolygonOffset::LINES);
+    offset->factor = 6.0;
+    shaderSep->insertChild(offset,0);
+    //_ivRoot->addChild(offset);
     //_ivRoot->addChild(_ivStyle);
     //_ivRoot->addChild(_ivBodies);
     _ivRoot->addChild(shaderSep1);
