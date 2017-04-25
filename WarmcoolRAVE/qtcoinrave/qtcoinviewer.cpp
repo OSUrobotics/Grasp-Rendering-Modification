@@ -4128,7 +4128,6 @@ SoShaderProgram* QtCoinViewer::_ConfigureShaders(int shader_id){
     //Initialize the vertex and fragment shaders
     SoVertexShader* vertexShader = new SoVertexShader;
     SoFragmentShader* fragmentShader = new SoFragmentShader;
-    SoGeometryShader* geometryShader = new SoGeometryShader;
     //Specify the vertex and fragment shaders
     if(shader_id==0){
     	vertexShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/warmcoolVert.glsl");
