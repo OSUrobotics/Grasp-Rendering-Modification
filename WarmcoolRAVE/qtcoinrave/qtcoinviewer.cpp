@@ -1,11 +1,11 @@
 // -*- coding: utf-8 -*-
 // Copyright (C) 2006-2013 Rosen Diankov <rosen.diankov@gmail.com>
-//
+// 
 // OpenRAVE is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // at your option) any later version.
-//
+//    
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -13,30 +13,18 @@
 //
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#include <stdio.h>
-#include <iostream>
-#include <stdlib.h>
-#include <vector>
-
 #include "qtcoin.h"
-#include <Inventor/annex/FXViz/nodes/SoShadowStyle.h>
-#include <Inventor/annex/FXViz/nodes/SoShadowGroup.h>
+   
 #include <Inventor/elements/SoGLCacheContextElement.h>
 #include <Inventor/actions/SoToVRML2Action.h>
 #include <Inventor/actions/SoWriteAction.h>
 #include <Inventor/nodes/SoComplexity.h>
-#include <Inventor/nodes/SoCone.h>
 #include <Inventor/nodes/SoCoordinate3.h>
-#include <Inventor/nodes/SoCube.h>
 #include <Inventor/nodes/SoFaceSet.h>
 #include <Inventor/nodes/SoPointSet.h>
 #include <Inventor/nodes/SoLightModel.h>
 #include <Inventor/nodes/SoLineSet.h>
 #include <Inventor/nodes/SoMaterialBinding.h>
-#include <Inventor/nodes/SoPolygonOffset.h>
-#include <Inventor/nodes/SoShaderParameter.h>
-#include <Inventor/nodes/SoShapeHints.h>
-#include <Inventor/nodes/SoSpotLight.h>
 #include <Inventor/nodes/SoTextureCombine.h>
 #include <Inventor/nodes/SoTextureCoordinate2.h>
 #include <Inventor/nodes/SoTextureScalePolicy.h>
@@ -46,6 +34,10 @@
 #include <Inventor/SoPickedPoint.h>
 #include <Inventor/VRMLnodes/SoVRMLGroup.h>
 
+#include <Inventor/nodes/SoSpotLight.h>
+#include <Inventor/annex/FXViz/nodes/SoShadowStyle.h>
+#include <Inventor/annex/FXViz/nodes/SoShadowGroup.h>
+#include <Inventor/nodes/SoPolygonOffset.h>
 #include <Inventor/nodes/SoShaderProgram.h>
 #include <Inventor/nodes/SoFragmentShader.h>
 #include <Inventor/nodes/SoVertexShader.h>
@@ -58,14 +50,13 @@
 #include <qgl.h>
 #endif
 
-#include "renderToTexture.hpp"
 #include <locale>
 
 const float TIMER_SENSOR_INTERVAL = (1.0f/60.0f);
 
 #define VIDEO_WIDTH 640
-#define VIDEO_HEIGHT 480   
-#define VIDEO_FRAMERATE (30000.0/10001.0) // 29.97 //60
+#define VIDEO_HEIGHT 480
+#define VIDEO_FRAMERATE (30000.0/1001.0) // 29.97 //60
 
 void DeleteItemCallbackSafe(QtCoinViewerWeakPtr wpt, Item* pItem)
 {
@@ -116,10 +107,6 @@ protected:
     boost::weak_ptr<QtCoinViewer> _pweakviewer;
 };
 typedef boost::shared_ptr<ViewerImageCallbackData> ViewerImageCallbackDataPtr;
-    
-
-
-
 
 class ViewerThreadCallbackData : public UserData
 {
@@ -146,7 +133,7 @@ void CustomCoinHandlerCB(const class SoError * error, void * data)
 {
     if( error != NULL ) {
         // extremely annoying errors
-        if(( strstr(error->getDebugString().getString(),"Coin warning in SbLine::setValue()") != NULL)||
+        if((strstr(error->getDebugString().getString(),"Coin warning in SbLine::setValue()") != NULL)||
            ( strstr(error->getDebugString().getString(),"Coin warning in SbDPLine::setValue()") != NULL) ||
            ( strstr(error->getDebugString().getString(),"Coin warning in SbVec3f::setValue()") != NULL) ||
            ( strstr(error->getDebugString().getString(),"Coin warning in SoNormalGenerator::calcFaceNormal()") != NULL) ||
@@ -155,7 +142,7 @@ void CustomCoinHandlerCB(const class SoError * error, void * data)
            ( strstr(error->getDebugString().getString(),"Coin warning in SbPlane::SbPlane(): The three points defining the plane cannot be on line.") != NULL ) ) {
             return;
         }
-    }
+    } 
 
     if( s_DefaultHandlerCB != NULL ) {
         s_DefaultHandlerCB(error,data);
@@ -173,19 +160,18 @@ QtCoinViewer::QtCoinViewer(EnvironmentBasePtr penv, std::istream& sinput)
 
 void QtCoinViewer::_InitConstructor(std::istream& sinput)
 {
-
-    int qtcoinbuild = SoQtExaminerViewer::BUILD_ALL;
+    int qtcoinbuild = SoQtExaminerViewer::BUILD_ALL; 
     bool bCreateStatusBar = true, bCreateMenu = true;
-    int nAlwaysOnTopFlag = 1; // 1 - add on top flag (keep others), 2 - add on top flag (remove others)
+    int nAlwaysOnTopFlag = 0; // 1 - add on top flag (keep others), 2 - add on top flag (remove others)
     sinput >> qtcoinbuild >> bCreateStatusBar >> bCreateMenu >> nAlwaysOnTopFlag;
 
     _nQuitMainLoop = 0;
     _name = str(boost::format("OpenRAVE %s")%OPENRAVE_VERSION_STRING);
     if( (OPENRAVE_VERSION_MINOR%2) || (OPENRAVE_VERSION_PATCH%2) ) {
-        _name += " (line 207) ";
+        _name += " (Development Version)";
     }
     else {
-        _name += " (Unstable Release)";
+        _name += " (Stable Release)";
     }
 #if QT_VERSION >= 0x040000 // check for qt4
     setWindowTitle(_name.c_str());
@@ -237,8 +223,9 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     _bRenderFiguresInCamera = false;
     _focalDistance = 0.0;
 
-
-    view1 = new QGroupBox("view1", this);
+    //vlayout = new QVBoxLayout(this);
+    view1 = new QGroupBox(this);
+    //vlayout->addWidget(view1, 1);
     setCentralWidget (view1);
 
     _nRenderWidth=VIDEO_WIDTH;
@@ -270,7 +257,7 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
             _ivBodies = SoDB::readAll(&mySceneInput);
             if( !!_ivBodies ) {
                 // environment should take care of this
-                _pviewer->setHeadlight(true);
+                _pviewer->setHeadlight(false);
             }
         }
     }
@@ -293,7 +280,7 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     _messageShadowTranslation->translation.setValue(SbVec3f(-0.002f,0.032f,0));
     pmsgsep->addChild(_messageShadowTranslation);
     SoBaseColor* pcolor1 = new SoBaseColor();
-    pcolor1->rgb.setValue(0.9f,0.9f,0.9f);
+    pcolor1->rgb.setValue(0.99f,0.99f,0.99f);
     pmsgsep->addChild(pcolor1);
     _messageNodes[1] = new SoText2();
     pmsgsep->addChild(_messageNodes[1]);
@@ -301,10 +288,9 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     _ivRoot->addChild(pmsgsep);
     _ivRoot->addChild(_ivCamera);
 
-
-    /////////////////
+    /////////////
     //SHADER
-    ////////////////
+    /////////////
     SoShapeHints * shapeHints = new SoShapeHints;
     shapeHints->vertexOrdering = SoShapeHints::CLOCKWISE;
     shapeHints->shapeType = SoShapeHints::SOLID;
@@ -318,86 +304,64 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
    
     SoSeparator* shaderSep1 = new SoSeparator;
     shaderSep1->insertChild(QtCoinViewer::_ConfigureShaders(0), 0);
-    
-    //_ivBodies->renderCaching.setValue(SoSeparator::OFF);
-    //SoCube * cube = new SoCube;
-    //_ivBodies->addChild(cube);
+
     shaderSep->insertChild(shapeHints, 0);
     shaderSep->addChild(_ivBodies);
     shaderSep1->insertChild(shapeHints1, 0);
     shaderSep1->addChild(_ivBodies);
-    
+
     SoDrawStyle *DrawStyle = new SoDrawStyle();
     DrawStyle->style = SoDrawStyle::LINES;
-    /*SoCone * cone = new SoCone;
-    shaderSep->insertChild(shapeHints, 0);
-    shaderSep->addChild(cone);
-    shaderSep1->insertChild(shapeHints1, 0);
-    shaderSep1->addChild(cone);*/
-    /////////////////
-    //END SHADER
-    //////////////// 
-
-
-
-    /////////////////
-    //START SHADOW
-    /////////////////
-    //Create a spotlight that is used to generate shadows with SoShadowGroup
-
-    SoSpotLight* spotLight = new SoSpotLight;
-    spotLight->intensity.setValue(1);
-    spotLight->location.setValue(-0.015f,-0.02f,5);
-    spotLight->color.setValue(1,1,1);
-    spotLight->direction.setValue(0,0,-1);
-    spotLight->dropOffRate.setValue(0);
-    spotLight->cutOffAngle.setValue(0.78539819f);
-    //shaderSep1->addChild(spotLight);
-    _ivBodies->addChild(spotLight);
-
-
-
-   //Testing light
-   /*SoDirectionalLight *myDirLight = new SoDirectionalLight;
-   myDirLight->direction.setValue(0, -1, -1);
-   myDirLight->color.setValue(1, 0, 0);
-   _ivRoot->addChild(myDirLight);*/
-
-    SoShadowStyle* shadowStyle = new SoShadowStyle;
-    //shaderSep1->addChild(shadowStyle);
-    _ivBodies->addChild(shadowStyle);
-
-    SoShadowGroup* shadowGroup = new SoShadowGroup;
-    //shadowGroup->addChild(shaderSep1);
-    shadowGroup->addChild(_ivBodies);
-    /////////////////
-    //END SHADOW
-    /////////////////
-	
-    SoEventCallback * ecb = new SoEventCallback;
-    ecb->addEventCallback(SoLocation2Event::getClassTypeId(), mousemove_cb, this);
-    _ivRoot->addChild(ecb);
-
-    _ivStyle->style = SoDrawStyle::LINES;
-    _ivStyle->lineWidth = 4.;
-    shaderSep->insertChild(_ivStyle,0);
+    
+    DrawStyle->lineWidth = 4.;
+    shaderSep->insertChild(DrawStyle,0);
     SoPolygonOffset* offset = new SoPolygonOffset;
     offset->styles.setValue(SoPolygonOffset::LINES);
     offset->factor = 6.0;
     shaderSep->insertChild(offset,0);
-    //_ivRoot->addChild(offset);
-    //_ivRoot->addChild(_ivStyle);
-    //_ivRoot->addChild(_ivBodies);
-    _ivRoot->addChild(shaderSep1);
-    //_ivRoot->addChild(shadowGroup);
-    _ivRoot->addChild(shaderSep);
+   
+    /////////////
+    //SHADOWS
+    /////////////
 
-    // add Inventor selection callbacks
+    SoSpotLight* spotLight = new SoSpotLight;
+    spotLight->intensity.setValue(0.1);
+    spotLight->location.setValue(-0.015f,-0.02f,5);
+    spotLight->color.setValue(1,1,1);
+    spotLight->direction.setValue(0,0,-1); 
+    spotLight->dropOffRate.setValue(0); 
+    spotLight->cutOffAngle.setValue(0.78539819f);
+    _ivBodies->addChild(spotLight);
+ 
+    SoShadowStyle* shadowStyle = new SoShadowStyle;
+    _ivBodies->addChild(shadowStyle);
+
+    SoShadowGroup* shadowGroup = new SoShadowGroup;
+    shadowGroup->addChild(_ivBodies);
+
+    /////////////
+    //END SHADER
+    /////////////         
+  
+        
+  
+    SoEventCallback * ecb = new SoEventCallback; 
+    ecb->addEventCallback(SoLocation2Event::getClassTypeId(), mousemove_cb, this);
+    _ivRoot->addChild(ecb);  
+
+    //_ivRoot->addChild(shaderSep1);    
+    _ivRoot->addChild(shadowGroup);
+    _ivRoot->addChild(shaderSep); 
+  
+    //_ivRoot->addChild(_ivStyle); 
+    //_ivRoot->addChild(_ivBodies); 
+   
+    // add Inventor selection callbacks  
     _ivRoot->addSelectionCallback(_SelectHandler, this);
     _ivRoot->addDeselectionCallback(_DeselectHandler, this);
 
     SoComplexity* pcomplexity = new SoComplexity();
-    pcomplexity->value = 0.5f; // default =0.5, lower is faster
+    pcomplexity->value = 0.1f; // default =0.5, lower is faster
     pcomplexity->type = SoComplexity::SCREEN_SPACE;
     pcomplexity->textureQuality = 1.0; // good texture quality
     _ivRoot->addChild(pcomplexity);
@@ -405,26 +369,24 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     ppolicy->policy = SoTextureScalePolicy::FRACTURE; // requires in order to support non-power of 2 textures
     _ivRoot->addChild(ppolicy);
 
-    // We dont need the built in light model if we're using custom shaders
-    //_pFigureRoot = new SoSeparator();
-    //{
-    //    SoLightModel* plightmodel = new SoLightModel();
-    //    plightmodel->model = SoLightModel::PHONG;  //BASE_COLOR; <-- disable lighting
-    //  _pFigureRoot->addChild(plightmodel);
-    // }
-    // _ivRoot->addChild(_pFigureRoot);
-
+   /* _pFigureRoot = new SoSeparator();
+    {
+        SoLightModel* plightmodel = new SoLightModel();
+        plightmodel->model = SoLightModel::BASE_COLOR; // disable lighting
+        _pFigureRoot->addChild(plightmodel);
+    }
+    _ivRoot->addChild(_pFigureRoot);*/
 
     _pviewer->setSceneGraph(_ivRoot);
     _pviewer->setAutoClippingStrategy(SoQtViewer::CONSTANT_NEAR_PLANE, 0.01f);
     _pviewer->setSeekTime(1.0f);
 
+    _SetBkgndColor(Vector(1,1,1));
 
     // setup a callback handler for keyboard events
     _eventKeyboardCB = new SoEventCallback;
     _ivRoot->addChild(_eventKeyboardCB);
     _eventKeyboardCB->addEventCallback(SoKeyboardEvent::getClassTypeId(), _KeyHandler, this);
-
 
     _altDown[0] = _altDown[1]  = false;
     _ctrlDown[0] = _ctrlDown[1] = false;
@@ -433,10 +395,10 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     // toggle switches
     _nFrameNum = 0;
     _bDisplayGrid = false;
-    _bDisplayIK = true;
+    _bDisplayIK = false;
     _bDisplayFPS = true;
     _bJointHilit = true;
-    _bDynamicReplan = true;
+    _bDynamicReplan = false;
     _bVelPredict = true;
     _bDynSim = false;
     _bControl = true;
@@ -446,10 +408,9 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     _bMemory = true;
     _bHardwarePlan = false;
     _bShareBitmap = true;
-    _bManipTracking = true;
-    _bAntialiasing = true;
+    _bManipTracking = false;
+    _bAntialiasing = false;
     _viewGeometryMode = VG_RenderOnly;
-
 
     if( bCreateMenu ) {
         SetupMenus();
@@ -472,9 +433,9 @@ void QtCoinViewer::_InitConstructor(std::istream& sinput)
     // for some reason qt4 resets the locale to the default locale at some point, and openrave stops working
     // std::locale::global(std::locale::classic());
 
-    if( nAlwaysOnTopFlag != 1 ) {
+    if( nAlwaysOnTopFlag != 0 ) {
         Qt::WindowFlags flags = Qt::CustomizeWindowHint | Qt::WindowStaysOnTopHint;
-        if( nAlwaysOnTopFlag == 0 ) {
+        if( nAlwaysOnTopFlag == 1 ) {
             flags |= this->windowFlags();
         }
         this->setWindowFlags(flags);
@@ -576,14 +537,14 @@ void QtCoinViewer::_mousemove_cb(SoEventCallback * node)
             _vMouseSurfacePosition.x = pt->getPoint()[0];
             _vMouseSurfacePosition.y = pt->getPoint()[1];
             _vMouseSurfacePosition.z = pt->getPoint()[2];
-            _vMouseSurfaceNormal.x = pt->getNormal()[0];
+            _vMouseSurfaceNormal.x = pt->getNormal()[0]; 
             _vMouseSurfaceNormal.y = pt->getNormal()[1];
             _vMouseSurfaceNormal.z = pt->getNormal()[2];
             SbVec3f cp = GetCamera()->position.getValue();
             RaveVector<float> camerapos (cp[0],cp[1],cp[2]);
             _vMouseRayDirection = _vMouseSurfacePosition-camerapos;
             if( _vMouseRayDirection.lengthsqr3() > 0 ) {
-                _vMouseRayDirection.normalize3();
+                _vMouseRayDirection.normalize3(); 
             }
             else {
                 _vMouseRayDirection = Vector(0,0,0);
@@ -876,7 +837,7 @@ void QtCoinViewer::SetCamera(const RaveTransform<float>& trans,float focalDistan
 
 class DrawMessage : public QtCoinViewer::EnvMessage
 {
-public:
+public: 
     enum DrawType
     {
         DT_Point = 0,
@@ -932,41 +893,33 @@ public:
         case DT_Point:
             if( _bManyColors ) {
                 ret = pviewer->_plot3(_handle, &_vpoints[0], _numPoints, _stride, _fwidth, &_vcolors[0],_bhasalpha);
-                std::cout << "i am using _plot3 (1) from viewerexecute" << std::endl;
             }
             else  {
                 ret = pviewer->_plot3(_handle, &_vpoints[0], _numPoints, _stride, _fwidth, _color);
-                std::cout << "i am using _plot3 (2) from viewerexecute" << std::endl;
             }
             break;
         case DT_Sphere:
             if( _bManyColors ) {
                 ret = pviewer->_drawspheres(_handle, &_vpoints[0], _numPoints, _stride, _fwidth, &_vcolors[0],_bhasalpha);
-                std::cout << "i am using _drawspheres (1) from viewerexecute" << std::endl;
             }
             else {
                 ret = pviewer->_drawspheres(_handle, &_vpoints[0], _numPoints, _stride, _fwidth, _color);
-                std::cout << "i am using _drawspheres (2) from viewerexecute" << std::endl;
             }
             break;
         case DT_LineStrip:
             if( _bManyColors ) {
                 ret = pviewer->_drawlinestrip(_handle, &_vpoints[0], _numPoints, _stride, _fwidth, &_vcolors[0]);
-                std::cout << "i am using _drawlinestrip (1) from viewerexecute" << std::endl;
             }
             else {
                 ret = pviewer->_drawlinestrip(_handle, &_vpoints[0], _numPoints, _stride, _fwidth, _color);
-                std::cout << "i am using _drawlinestrip (2) from viewerexecute" << std::endl;
             }
             break;
         case DT_LineList:
             if( _bManyColors ) {
                 ret = pviewer->_drawlinelist(_handle, &_vpoints[0], _numPoints, _stride, _fwidth, &_vcolors[0]);
-                std::cout << "i am using _drawlinelist (1) from viewerexecute" << std::endl;
             }
             else {
                 ret = pviewer->_drawlinelist(_handle, &_vpoints[0], _numPoints, _stride, _fwidth, _color);
-                std::cout << "i am using _drawlinelist (2) from viewerexecute" << std::endl;
             }
             break;
         }
@@ -989,7 +942,6 @@ private:
 
 SoSwitch* QtCoinViewer::_createhandle()
 {
-    std::cout << "QtCoinViewer::_create handle" << std::endl;
     SoSwitch* handle = new SoSwitch();
     handle->whichChild = SO_SWITCH_ALL;
     return handle;
@@ -1001,7 +953,6 @@ GraphHandlePtr QtCoinViewer::plot3(const float* ppoints, int numPoints, int stri
     EnvMessagePtr pmsg(new DrawMessage(shared_viewer(), handle, ppoints, numPoints, stride, fPointSize, color, drawstyle ? DrawMessage::DT_Sphere : DrawMessage::DT_Point));
     pmsg->callerexecute(false);
     return GraphHandlePtr(new PrivateGraphHandle(shared_viewer(), handle));
-    std::cout << "Im creating a DrawMessage from Plot3  (1)" << std::endl;
 }
 
 GraphHandlePtr QtCoinViewer::plot3(const float* ppoints, int numPoints, int stride, float fPointSize, const float* colors, int drawstyle, bool bhasalpha)
@@ -1010,7 +961,6 @@ GraphHandlePtr QtCoinViewer::plot3(const float* ppoints, int numPoints, int stri
     EnvMessagePtr pmsg(new DrawMessage(shared_viewer(), handle, ppoints, numPoints, stride, fPointSize, colors, drawstyle ? DrawMessage::DT_Sphere : DrawMessage::DT_Point, bhasalpha));
     pmsg->callerexecute(false);
     return GraphHandlePtr(new PrivateGraphHandle(shared_viewer(), handle));
-    std::cout << "Im creating a DrawMessage from Plot3  (2)" << std::endl;
 }
 
 GraphHandlePtr QtCoinViewer::drawlinestrip(const float* ppoints, int numPoints, int stride, float fwidth, const RaveVector<float>& color)
@@ -1019,7 +969,6 @@ GraphHandlePtr QtCoinViewer::drawlinestrip(const float* ppoints, int numPoints, 
     EnvMessagePtr pmsg(new DrawMessage(shared_viewer(), handle, ppoints, numPoints, stride, fwidth, color,DrawMessage::DT_LineStrip));
     pmsg->callerexecute(false);
     return GraphHandlePtr(new PrivateGraphHandle(shared_viewer(), handle));
-    std::cout << "Im creating a DrawMessage from drawlinestrip" << std::endl;
 }
 
 GraphHandlePtr QtCoinViewer::drawlinestrip(const float* ppoints, int numPoints, int stride, float fwidth, const float* colors)
@@ -1028,7 +977,6 @@ GraphHandlePtr QtCoinViewer::drawlinestrip(const float* ppoints, int numPoints, 
     EnvMessagePtr pmsg(new DrawMessage(shared_viewer(), handle, ppoints, numPoints, stride, fwidth, colors, DrawMessage::DT_LineStrip,false));
     pmsg->callerexecute(false);
     return GraphHandlePtr(new PrivateGraphHandle(shared_viewer(), handle));
-    std::cout << "Im creating a DrawMessage from drawlinestrip (2)" << std::endl;
 }
 
 GraphHandlePtr QtCoinViewer::drawlinelist(const float* ppoints, int numPoints, int stride, float fwidth, const RaveVector<float>& color)
@@ -1143,129 +1091,12 @@ GraphHandlePtr QtCoinViewer::drawplane(const RaveTransform<float>& tplane, const
     return GraphHandlePtr(new PrivateGraphHandle(shared_viewer(), handle));
 }
 
-
-
-
-
-/* class depth texture 
- * Call the external setup function
- * call _draw trimesh
- * call an external unsetup function
- */
-/* Create a class like DrawTriClass for the depth texture 
- * Actual pointer to depth texture in qtcoinviewer
- * the "execute" method calls the external set up texture rendering
- *   renders using pviewer drawtrimesh
- * By the time you come out of this the depth texture models should be there
- * Add a release depth textures to this method*/
-
-
-
- /* Class DepthTextureMessage :
-  *
-  * Constructor borrows from drawTrimesh's constructor and arranges the
-  * points to be drawn later in the viewerexecute() function
-  * 
-  * viewerexecute() gets the light position from the current GL state
-  * calls setUpRenderToFrameBuffer from renderToTexture.cpp to set up the texture buffer
-  * uses _drawTrimesh to render to the texture.
-  * 
- */
-class DepthTextureMessage : public QtCoinViewer::EnvMessage
-{
-public:
-    DepthTextureMessage( QtCoinViewerPtr pviewer, 
-                         SoSwitch* handle, 
-                         const float* ppoints, 
-                         int stride, 
-                         const int* pIndices, 
-                         int numTriangles, 
-                         const RaveVector<float>& color,
-                         GLuint depthTextureName )
-                        : EnvMessage(pviewer, NULL, false), _color(color), _depthTextureName(depthTextureName ){    
-
-        _vpoints.resize(3*3*numTriangles);
-        if( pIndices == NULL ) {
-            for(int i = 0; i < 3*numTriangles; ++i) {
-                _vpoints[3*i+0] = ppoints[0];
-                _vpoints[3*i+1] = ppoints[1];
-                _vpoints[3*i+2] = ppoints[2];
-                ppoints = (float*)((char*)ppoints + stride);
-            }
-        }
-        else {
-            for(int i = 0; i < numTriangles*3; ++i) {
-                float* p = (float*)((char*)ppoints +  stride * pIndices[i]);
-                _vpoints[3*i+0] = p[0];
-                _vpoints[3*i+1] = p[1];
-                _vpoints[3*i+2] = p[2];
-            }
-        }
-    }
-    
-    virtual void viewerexecute() {
-        QtCoinViewerPtr pviewer = _pviewer.lock();
-        if( !pviewer ){
-            return;
-        }
-        //Get light position for use in depth buffering
-        GLint* _light_pos = 0;
-        glGetLightiv(GL_LIGHT0, GL_POSITION, _light_pos);
-
-        setUpRenderToFrameBuffer(_light_pos, _depthTextureName, FramebufferName);
-        void* ret = pviewer->_drawtrimesh( _handle,
-                                           _ppoints, 
-                                           3*sizeof(float), 
-                                           NULL, 
-                                           _numTriangles, 
-                                           _color);
-        UnsetupRenderToFrameBuffer();        
-        EnvMessage::viewerexecute();
-    }
-private:
-GLuint FramebufferName = 0;
-GLuint depthTexture = 0;
-    SoSwitch* _handle;
-    GLuint _depthTextureName;
-    float* _ppoints;
-    int _stride;
-    const int* _pIndices;
-    int _numTriangles;
-    RaveVector<float> _color;
-    vector<float> _vpoints;
-};
-
-
-
-GraphHandlePtr QtCoinViewer::drawDepthTexture( const float* ppoints,
-                                               int stride,
-                                               const int* pIndices,
-                                               int numTriangles,
-                                               const RaveVector<float>& color,
-                                               uint depthTextureName ){
-    SoSwitch* handle = _createhandle();
-
-    EnvMessagePtr pmsg(new DepthTextureMessage(shared_viewer(), handle, ppoints, stride, pIndices, numTriangles, color, depthTextureName));
-    pmsg->callerexecute(false);
-    std::cout << "i am making a depth texture" << std::endl;
-    return GraphHandlePtr(new PrivateGraphHandle(shared_viewer(), handle));
-}
-
-
-
-
-
-
-
-
-
 class DrawTriMeshMessage : public QtCoinViewer::EnvMessage
 {
 public:
     DrawTriMeshMessage(QtCoinViewerPtr pviewer, SoSwitch* handle, const float* ppoints, int stride, const int* pIndices, int numTriangles, const RaveVector<float>& color)
         : EnvMessage(pviewer, NULL, false), _color(color), _handle(handle)
     {
-        std::cout << "DrawTriMeshMessage constructor" << std::cout;
         _vpoints.resize(3*3*numTriangles);
         if( pIndices == NULL ) {
             for(int i = 0; i < 3*numTriangles; ++i) {
@@ -1286,7 +1117,6 @@ public:
     }
 
     virtual void viewerexecute() {
-         std::cout << "execute DrawTriMeshMessage" << std::cout;
         QtCoinViewerPtr pviewer = _pviewer.lock();
         if( !pviewer ) {
             return;
@@ -1308,7 +1138,6 @@ public:
     DrawTriMeshColorMessage(QtCoinViewerPtr pviewer, SoSwitch* handle, const float* ppoints, int stride, const int* pIndices, int numTriangles, const boost::multi_array<float,2>& colors)
         : EnvMessage(pviewer, NULL, false), _colors(colors), _handle(handle)
     {
-        std::cout << "DrawTriMeshColorMessage constructor" << std::cout; 
         _vpoints.resize(3*3*numTriangles);
         if( pIndices == NULL ) {
             for(int i = 0; i < 3*numTriangles; ++i) {
@@ -1329,7 +1158,6 @@ public:
     }
 
     virtual void viewerexecute() {
-        std::cout << "execute DrawTriMeshColorMessage" << std::cout;
         QtCoinViewerPtr pviewer = _pviewer.lock();
         if( !pviewer ) {
             return;
@@ -1347,8 +1175,7 @@ private:
 
 
 GraphHandlePtr QtCoinViewer::drawtrimesh(const float* ppoints, int stride, const int* pIndices, int numTriangles, const RaveVector<float>& color)
-{  
-    std::cout << "drawtrimesh is happening" << std::cout;
+{
     SoSwitch* handle = _createhandle();
     EnvMessagePtr pmsg(new DrawTriMeshMessage(shared_viewer(), handle, ppoints, stride, pIndices, numTriangles, color));
     pmsg->callerexecute(false);
@@ -1357,7 +1184,6 @@ GraphHandlePtr QtCoinViewer::drawtrimesh(const float* ppoints, int stride, const
 
 GraphHandlePtr QtCoinViewer::drawtrimesh(const float* ppoints, int stride, const int* pIndices, int numTriangles, const boost::multi_array<float,2>& colors)
 {
-    std::cout << "drawtrimesh (2) is happening" << std::cout;
     SoSwitch* handle = _createhandle();
     EnvMessagePtr pmsg(new DrawTriMeshColorMessage(shared_viewer(), handle, ppoints, stride, pIndices, numTriangles, colors));
     pmsg->callerexecute(false);
@@ -1440,7 +1266,6 @@ private:
 
 void QtCoinViewer::SetGraphShow(SoSwitch* handle, bool bshow)
 {
-    std::cout << "SetGraphShow is happening" << std::cout;
     EnvMessagePtr pmsg(new SetGraphShowMessage(shared_viewer(), (void**)NULL, handle, bshow));
     pmsg->callerexecute(false);
 }
@@ -1507,7 +1332,6 @@ class SetBkgndColorMessage : public QtCoinViewer::EnvMessage
 public:
     SetBkgndColorMessage(QtCoinViewerPtr pviewer, void** ppreturn, const RaveVector<float>& color)
         : EnvMessage(pviewer, ppreturn, false), _color(color) {
-        std::cout << "SetBkgndColorMessage constructor" << std::endl;
     }
 
     virtual void viewerexecute() {
@@ -1525,15 +1349,12 @@ private:
 
 void QtCoinViewer::SetBkgndColor(const RaveVector<float>& color)
 {
-   std::cout << "QtCoinViewer::SetBkgndColor is being called" << std::endl; 
-  // assert(FALSE);
     if (_timerSensor->isScheduled() && _bUpdateEnvironment) {
         EnvMessagePtr pmsg(new SetBkgndColorMessage(shared_viewer(), (void**)NULL, color));
         pmsg->callerexecute(false);
-        std::cout << "i am coloring (SetBkgndColor)" << std::endl;
     }
 }
-//*/
+
 void QtCoinViewer::SetEnvironmentSync(bool bUpdate)
 {
     boost::mutex::scoped_lock lockupdating(_mutexUpdating);
@@ -1549,7 +1370,7 @@ void QtCoinViewer::SetEnvironmentSync(bool bUpdate)
         }
         _listMessages.clear();
     }
-}//*/
+}
 
 void QtCoinViewer::EnvironmentSync()
 {
@@ -1584,12 +1405,9 @@ void QtCoinViewer::_SetCamera(const RaveTransform<float>& _t, float focalDistanc
 
 void QtCoinViewer::_SetBkgndColor(const RaveVector<float>& color)
 {
-   // _pviewer->setBackgroundColor(SbColor(color.x, color.y, color.z));
-    _pviewer->setBackgroundColor(SbColor(0.0f, 0.0f, 0.3f));
-    
-    //_ivOffscreen.setBackgroundColor(SbColor(color.x, color.y, color.z));
-    std::cout << "_SetBkgndColor is happening" << std::endl;
- }
+    _pviewer->setBackgroundColor(SbColor(color.x, color.y, color.z));
+    _ivOffscreen.setBackgroundColor(SbColor(color.x, color.y, color.z));
+}
 
 void QtCoinViewer::_closegraph(SoSwitch* handle)
 {
@@ -1600,7 +1418,6 @@ void QtCoinViewer::_closegraph(SoSwitch* handle)
 
 void QtCoinViewer::_SetGraphTransform(SoSwitch* handle, const RaveTransform<float>& t)
 {
-    std::cout << "_SetGraphTransform" << std::endl;
     if( handle != NULL ) {
         SoNode* pparent = handle->getChild(0);
         if((pparent != NULL)&&(pparent->getTypeId() == SoSeparator::getClassTypeId())) {
@@ -2347,7 +2164,6 @@ void* QtCoinViewer::_drawtrimesh(SoSwitch* handle, const float* ppoints, int str
 
 void QtCoinViewer::SetupMenus()
 {
-    std::cout << "setting up menus (Setupenus)" << std::endl;
 #if QT_VERSION >= 0x040000 // check for qt4
     QMenu* pcurmenu;
     QAction* pact;
@@ -2924,8 +2740,6 @@ void QtCoinViewer::_deselect()
     }
 }
 
-/* screw this
-
 boost::shared_ptr<EnvironmentMutex::scoped_try_lock> QtCoinViewer::LockEnvironment(uint64_t timeout,bool bUpdateEnvironment)
 {
     // try to acquire the lock
@@ -2949,8 +2763,6 @@ boost::shared_ptr<EnvironmentMutex::scoped_try_lock> QtCoinViewer::LockEnvironme
     }
     return lockenv;
 }
-
-*/
 
 bool QtCoinViewer::_HandleDeselection(SoNode *node)
 {
@@ -3107,7 +2919,6 @@ void QtCoinViewer::AdvanceFrame(bool bForward)
 
 void QtCoinViewer::_UpdateEnvironment(float fTimeElapsed)
 {
-    //std::cout << "Updating Environment ! " << std::endl;
     boost::mutex::scoped_lock lockupd(_mutexUpdating);
 
     if( _bUpdateEnvironment ) {
@@ -3115,12 +2926,12 @@ void QtCoinViewer::_UpdateEnvironment(float fTimeElapsed)
         list<EnvMessagePtr> listmessages;
         {
             boost::mutex::scoped_lock lockmsg(_mutexMessages);
-            listmessages.swap(_listMessages);    //swaps the old list of messages with the new one
-            BOOST_ASSERT( _listMessages.size() == 0 );  //make sure the new old messages list is size 0
+            listmessages.swap(_listMessages);
+            BOOST_ASSERT( _listMessages.size() == 0 );
         }
 
-        FOREACH(itmsg, listmessages) {    //for each of the messages in our new list execute.
-            (*itmsg)->viewerexecute();    
+        FOREACH(itmsg, listmessages) {
+            (*itmsg)->viewerexecute();
         }
 
         // have to update model after messages since it can lock the environment
@@ -3157,7 +2968,6 @@ void QtCoinViewer::GlobVideoFrame(void* p, SoSensor*)
 {
     BOOST_ASSERT( p != NULL );
     ((QtCoinViewer*)p)->_VideoFrame();
-    
 }
 
 void QtCoinViewer::_VideoFrame()
@@ -4143,10 +3953,9 @@ SoShaderProgram* QtCoinViewer::_ConfigureShaders(int shader_id){
     shaderProgram->shaderObject.set1Value(1, fragmentShader);
 	
     return shaderProgram;
-}
+} 
 
-/*
-ScreenRendererWidget::ScreenRendererWidget()
+/*ScreenRendererWidget::ScreenRendererWidget()
    {
 
     std::list<EnvironmentBasePtr> listenvironments;

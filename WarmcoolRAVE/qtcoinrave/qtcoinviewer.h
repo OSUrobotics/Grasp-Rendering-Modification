@@ -34,10 +34,8 @@
 
 #endif
 
-#include "qtcoin.h"
-
 #include <Inventor/nodes/SoShaderProgram.h>
-#include <qgl.h>
+#include "qtcoin.h"
 
 //#include <QtDeclarative/QDeclarativeExtensionPlugin>
 //#include <QtDeclarative/qdeclarative.h>
@@ -166,9 +164,6 @@ public:
     virtual GraphHandlePtr drawplane(const RaveTransform<float>& tplane, const RaveVector<float>& vextents, const boost::multi_array<float,3>& vtexture);
     virtual GraphHandlePtr drawtrimesh(const float* ppoints, int stride, const int* pIndices, int numTriangles, const RaveVector<float>& color);
     virtual GraphHandlePtr drawtrimesh(const float* ppoints, int stride, const int* pIndices, int numTriangles, const boost::multi_array<float,2>& colors);
-
-    virtual GraphHandlePtr drawDepthTexture(const float* ppoints, int stride, const int* pIndices, int numTriangles, const RaveVector<float>& color, uint depthTextureName );    
-
 
     virtual void SetEnvironmentSync(bool bUpdate);
     virtual void EnvironmentSync();
@@ -328,8 +323,6 @@ public:
     virtual void* _drawplane(SoSwitch* handle, const RaveTransform<float>& tplane, const RaveVector<float>& vextents, const boost::multi_array<float,3>& vtexture);
     virtual void* _drawtrimesh(SoSwitch* handle, const float* ppoints, int stride, const int* pIndices, int numTriangles, const RaveVector<float>& color);
     virtual void* _drawtrimesh(SoSwitch* handle, const float* ppoints, int stride, const int* pIndices, int numTriangles, const boost::multi_array<float,2>& colors);
-    // We don't need a draw function for drawDepthBuffer becaue ng-point texture coordinates. The elements of the texture array are distributed evenly into texture space, a square spanning the coordinates (0, 0) to (1, 1) (or a line segment spanning 0–1 for 1d textures, or a cube spanning (0, 0, 0)–(1, 1, 1) for 3d textures). Tng-point texture coordinates. The elements of the texture array are distributed evenly into texture space, a square spanning the coordinates (0, 0) to (1, 1) (or a line segment spanning 0–1 for 1d textures, or a cube spanning (0, 0, 0)–(1, 1, 1) for 3d textures). Tng-point texture coordinates. The elements of the texture array are distributed evenly into texture space, a square spanning the coordinates (0, 0) to (1, 1) (or a line segment spanning 0–1 for 1d textures, or a cube spanning (0, 0, 0)–(1, 1, 1) for 3d textures). Tng-point texture coordinates. The elements of the texture array are distributed evenly into texture space, a square spanning the coordinates (0, 0) to (1, 1) (or a line segment spanning 0–1 for 1d textures, or a cube spanning (0, 0, 0)–(1, 1, 1) for 3d textures). Tit uses the draw fumction from drawtrimesh
-
 
     virtual void _deselect();
 
@@ -382,7 +375,7 @@ public:
     int _nFrameNum;     ///< frame number for recording
     string _strMouseMove;     ///< mouse move message
     // Message Queue
-    list<EnvMessagePtr> _listMessages;  ///< list of messages to be acted upon  
+    list<EnvMessagePtr> _listMessages;
     list<Item*> _listRemoveItems;
     boost::mutex _mutexItems, _mutexUpdating, _mutexMouseMove;     ///< mutex protected messages
     mutable boost::mutex _mutexMessages;
@@ -394,7 +387,7 @@ public:
     SoSelection*        _ivRoot;            ///< root node of the inventor scene
     SoSeparator*        _ivBodies;          ///< all the environment bodies are stored in this node
     SoPerspectiveCamera* _ivCamera;           ///< the camera itself
-    SoDrawStyle*         _ivStyle;           ///< secifies common rendering properties for shapes
+    SoDrawStyle*         _ivStyle;
     SoTimerSensor*      _timerSensor;       ///< used for animation callback
 
     SoTimerSensor*      _timerVideo;        ///< used for video recording
@@ -507,7 +500,6 @@ public:
     float _fTrackAngleToUp; ///< tilt a little when looking at the point
 
     friend class EnvMessage;
-    friend class DepthTextureMessage;
     friend class ViewerSetSizeMessage;
     friend class ViewerMoveMessage;
     friend class ViewerSetNameMessage;
@@ -537,13 +529,9 @@ public:
 
     // qml
     friend class ScreenRendererWidget;
-
-void renderTexture();
-
 };
 
-/*
-class ScreenRendererWidget : public QWidget
+/*class ScreenRendererWidget : public QWidget
    {
     Q_OBJECT
 
