@@ -51,6 +51,8 @@
 #endif
 
 #include <locale>
+#include <string>
+#include <unistd.h>
 
 const float TIMER_SENSOR_INTERVAL = (1.0f/60.0f);
 
@@ -3935,17 +3937,24 @@ void QtCoinViewer::_SetNearPlane(dReal nearplane)
 
 SoShaderProgram* QtCoinViewer::_ConfigureShaders(int shader_id){
 
+    string username = getlogin();
+
+    string warmcoolVertPath = "/home/" + username + "/openrave/plugins/qtcoinrave/warmcoolVert.glsl";
+    string warmcollFragPath = "/home/" + username + "/openrave/plugins/qtcoinrave/warmcoolFrag.glsl";
+    string silhouetteVertPath = "/home/" + username + "/openrave/plugins/qtcoinrave/silhouetteVert.glsl";
+    string silhouetteFragPath = "/home/" + username + "/openrave/plugins/qtcoinrave/silhouetteFrag.glsl";
+
     //Initialize the vertex and fragment shaders
     SoVertexShader* vertexShader = new SoVertexShader;
     SoFragmentShader* fragmentShader = new SoFragmentShader;
     //Specify the vertex and fragment shaders
     if(shader_id==0){
-    	vertexShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/warmcoolVert.glsl");
-    	fragmentShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/warmcoolFrag.glsl");
+    	vertexShader->sourceProgram.setValue(warmcoolVertPath.c_str());
+    	fragmentShader->sourceProgram.setValue(warmcollFragPath.c_str());
     }
     else if(shader_id==1){
-    	vertexShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/silhouetteVert.glsl");
-    	fragmentShader->sourceProgram.setValue("/home/mcqueen/openrave/plugins/qtcoinrave/silhouetteFrag.glsl");
+    	vertexShader->sourceProgram.setValue(silhouetteVertPath.c_str());
+    	fragmentShader->sourceProgram.setValue(silhouetteFragPath.c_str());
     }
     //Initialize and set the shader program
     SoShaderProgram* shaderProgram = new SoShaderProgram;
