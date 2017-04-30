@@ -53,6 +53,7 @@
 #include <locale>
 #include <string>
 #include <unistd.h>
+#include <pwd.h>
 
 const float TIMER_SENSOR_INTERVAL = (1.0f/60.0f);
 
@@ -3935,14 +3936,22 @@ void QtCoinViewer::_SetNearPlane(dReal nearplane)
     _pviewer->setAutoClippingStrategy(SoQtViewer::CONSTANT_NEAR_PLANE, nearplane);
 }
 
+std::string get_username() {
+    struct passwd *pwd = getpwuid(getuid());
+    if (pwd)
+        return pwd->pw_name;
+    else
+        return "(?)";
+}
+
 SoShaderProgram* QtCoinViewer::_ConfigureShaders(int shader_id){
 
-    string username = getlogin();
+    string username = get_username();
 
-    string warmcoolVertPath = "/home/" + username + "/openrave/plugins/qtcoinrave/warmcoolVert.glsl";
-    string warmcollFragPath = "/home/" + username + "/openrave/plugins/qtcoinrave/warmcoolFrag.glsl";
-    string silhouetteVertPath = "/home/" + username + "/openrave/plugins/qtcoinrave/silhouetteVert.glsl";
-    string silhouetteFragPath = "/home/" + username + "/openrave/plugins/qtcoinrave/silhouetteFrag.glsl";
+    string warmcoolVertPath = "/home/" +username+ "/openrave/plugins/qtcoinrave/warmcoolVert.glsl";
+    string warmcollFragPath = "/home/" +username+ "/openrave/plugins/qtcoinrave/warmcoolFrag.glsl";
+    string silhouetteVertPath = "/home/" +username+ "/openrave/plugins/qtcoinrave/silhouetteVert.glsl";
+    string silhouetteFragPath = "/home/" +username+ "/openrave/plugins/qtcoinrave/silhouetteFrag.glsl";
 
     //Initialize the vertex and fragment shaders
     SoVertexShader* vertexShader = new SoVertexShader;
